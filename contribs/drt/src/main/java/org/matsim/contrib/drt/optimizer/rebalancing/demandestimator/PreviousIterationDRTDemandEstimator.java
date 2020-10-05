@@ -35,8 +35,6 @@ import org.matsim.contrib.drt.analysis.zonal.DrtZonalSystem;
 import org.matsim.contrib.drt.analysis.zonal.DrtZone;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 
-import com.google.common.base.Preconditions;
-
 /**
  * Aggregates PersonDepartureEvents per iteration for the given mode and returns the numbers from the previous iteration
  * as expected demand for the current iteration.
@@ -49,7 +47,6 @@ public final class PreviousIterationDRTDemandEstimator implements ZonalDemandEst
 
 	private final DrtZonalSystem zonalSystem;
 	private final String mode;
-	private final String drtSpeedUpMode;
 	private final int timeBinSize;
 	private Map<Double, Map<DrtZone, MutableInt>> currentIterationDepartures = new HashMap<>();
 	private Map<Double, Map<DrtZone, MutableInt>> previousIterationDepartures = new HashMap<>();
@@ -57,7 +54,6 @@ public final class PreviousIterationDRTDemandEstimator implements ZonalDemandEst
 	public PreviousIterationDRTDemandEstimator(DrtZonalSystem zonalSystem, DrtConfigGroup drtCfg) {
 		this.zonalSystem = zonalSystem;
 		mode = drtCfg.getMode();
-		drtSpeedUpMode = drtCfg.getDrtSpeedUpMode();
 		timeBinSize = drtCfg.getRebalancingParams().get().getInterval();
 	}
 
@@ -69,7 +65,7 @@ public final class PreviousIterationDRTDemandEstimator implements ZonalDemandEst
 
 	@Override
 	public void handleEvent(PersonDepartureEvent event) {
-		if (event.getLegMode().equals(mode) || event.getLegMode().equals(drtSpeedUpMode)) {
+		if (event.getLegMode().equals(mode)) {
 			Double bin = getBinForTime(event.getTime());
 
 			DrtZone zone = zonalSystem.getZoneForLinkId(event.getLinkId());
